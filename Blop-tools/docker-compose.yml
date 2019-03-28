@@ -1,0 +1,36 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.7"
+
+services:
+
+    webserver:
+      image: nginx:stable-alpine
+      container_name: bloptools_nginx
+      working_dir: /application
+      volumes:
+        - /Dockerdata/Blop-tools/application:/application
+        - /Dockerdata/Blop-tools/phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+        - "1025:80"
+      labels:
+        - "traefik.frontend.rule=Host:blop-tools.simonlena.com"
+      networks:
+        - traefik_proxy
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: bloptools_phpfpm
+      working_dir: /application
+      volumes:
+        - /Dockerdata/Blop-tools/application:/application
+        - /Dockerdata/Blop-tools/phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
+      restart: always
+      networks:
+        - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_default

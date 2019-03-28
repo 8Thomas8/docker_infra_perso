@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  grafana:
+    image: grafana/grafana:5.4.3
+    container_name: grafana
+    env_file:
+      - 'env.grafana'
+    # Data persistency
+    # sudo mkdir -p /srv/docker/grafana/data; chown 472:472 /srv/docker/grafana/data
+    volumes:
+      - /DockerData/Grafana/data:/var/lib/grafana
+    labels:
+      - "traefik.frontend.rule=Host:XXXXXXXXXXXXXXXXXXXXXXXX"
+    networks:
+      - traefik
+    restart: always
+
+networks:
+  traefik:
+    external:
+      name: traefik_default

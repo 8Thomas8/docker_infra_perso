@@ -1,0 +1,79 @@
+version: '3.7'
+
+services:
+
+########################################################
+#Icinga déploiement pas par DockerFile - ACTUEL        #
+########################################################
+
+  icinga2:
+    build : ./ 
+    hostname: vox-icinga2
+    environment:
+      - DIRECTOR_KICKSTART="false"
+      - ICINGAWEB2_ADMIN_USER=admin_icinga
+      - ICINGAWEB2_ADMIN_PASS=XXXXXXXXXXX
+      #Ajout d'une BDD a coté (En cours)
+      #- DEFAULT_MYSQL_HOST=icinga-mariadb
+      #- DEFAULT_MYSQL_USER=root  #The MySQL user to access the database (defaults to icinga2)
+      #- DEFAULT_MYSQL_PASS=Tata89## #The password for the MySQL user. (defaults to randomly generated str$ 
+    volumes:
+      - /DockerData/icinga2/config_icinga2:/etc/icinga2 #Icinga2 configuration folder
+      - /DockerData/icinga2/config_icingaweb2:/etc/icingaweb2 #Icingaweb2 configuration folder
+      - /DockerData/icinga2/data_icinga2:/var/lib/icinga2 #Icinga2 Data
+      - /DockerData/icinga2/bdd_icinga2:/var/lib/mysql #MySQL Database
+      - /DockerData/icinga2/data_root:/root #Permet de garder les cle SSH pour la connection en by_ssh
+    labels:
+      - "traefik.frontend.rule=Host:icinga.voxintra"
+    networks:
+      - traefik
+    restart: always
+
+networks:
+  traefik:
+    external:
+      name: traefik_default
+
+########################################################
+#Icinga déploiement avec BDD  - NON FONCTIONNEL!!!#
+########################################################
+
+#  icinga2:
+#    image : jordan/icinga2
+#    hostname: icinga2
+#    labels:
+#      - "traefik.frontend.rule=Host:icinga.voxintra"
+#    environment:
+#      - DIRECTOR_KICKSTART="false"
+#      - ICINGAWEB2_ADMIN_USER=admin_icinga
+#      - ICINGAWEB2_ADMIN_PASS=XXXXXXXXXXX
+#      - DEFAULT_MYSQL_HOST=icinga-mariadb
+#      - DEFAULT_MYSQL_USER=root  #The MySQL user to access the database (defaults to icinga2)
+#      - DEFAULT_MYSQL_PASS=Tata89## #The password for the MySQL user. (defaults to randomly generated str$
+#    volumes:
+#      - /DockerData/icinga/config_icinga2:/etc/icinga2 #Icinga2 configuration folder
+#      - /DockerData/icinga/config_icingaweb2:/etc/icingaweb2 #Icingaweb2 configuration folder
+#      - /DockerData/icinga/data_icinga2:/var/lib/icinga2 #Icinga2 Data
+#      - /DockerData/icinga/bdd_icinga2:/var/lib/mysql #MySQL Database
+#    networks:
+#      - traefik
+#    restart: always
+
+#  icinga2-mariadb:
+#    image: mariadb
+#    container_name: icinga-mariadb
+#    hostname:icinga-mariadb
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=XXXXXXXXXXX
+#      - MYSQL_DATABASE=icingaweb2
+#      - MYSQL_DATABASE=icinga2idomysql
+#      - MYSQL_DATABASE=icingaweb2_director
+#    volumes :
+#      - /DockerData/icinga/bdd_icinga2:/var/lib/mysql #MySQL Database
+#   restart: always
+
+#networks:
+#  traefik:
+#    external:
+#      name: traefik_default
+

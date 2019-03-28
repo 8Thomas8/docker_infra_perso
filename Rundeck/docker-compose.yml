@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+
+  rundeck:
+    image: rundeck/rundeck:3.0.13-20190123
+    volumes:
+      - /Dockerdata/Rundeck/data:/home/rundeck/server/data
+    labels:
+      - "traefik.frontend.rule=Host:rundeck.XXXXXXXXX.com"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_default

@@ -1,0 +1,75 @@
+debug = false
+
+logLevel = "ERROR"
+
+defaultEntryPoints = ["https","http"]
+
+################################################################
+# Web configuration backend
+################################################################
+
+#Configuration afin de bloquer la WebApp par une authentification ( Facultatif )
+
+#[web]
+#address = ":8080"
+#[web.auth.basic]
+# User: toto | Password: password
+#users = ["toto:$2y$05$zNs3wc5UPB4su8vbFugVPuKEaLJXMf5Z.9hAI1ulJpBbhbBprfppO"]
+
+################################################################
+# Entry-points configuration
+################################################################
+
+#Ca permet de créer des règles de routages. 
+#Ce paragraphe permet, de forcer la redirection des requêtes HTTP vers HTTPS
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+
+#Rajouter le code ci-dessous pour une redirection https
+   #[entryPoints.http.redirect]
+   #entryPoint = "https"
+
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/cert.pem"
+      keyFile = "/privkey.pem"
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/nexus.voxatool.com.crt"
+      keyFile = "/nexus.voxatool.com.key"
+
+################################################################
+# Docker configuration backend
+################################################################
+
+#on configure Traefik pour qu’il se connecte à Docker pour écouter la création/suppression des containers. 
+#Avec cette configuration Traefik ajustera les règles de routing dynamiquement et il n’exposera pas les containers par défaut
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+#domain = "XXXXXXX"
+#watch = true
+#exposedByDefault = false
+
+################################################################
+# Let's encrypt
+################################################################
+
+## ATTENTION ne fonctionne pas avec les domaines non ouvert sur le net ##
+
+#Cette partie est relative à la génération automatique des certificats SSL. 
+#En gros il a besoin d’une adresse mail pour s’authentifier auprès des serveurs de Let’s encrypt. 
+#Les informations des certificats seront stockées dans le répertoire /etc/traefik/ à côté du fichier de config, 
+#Les demandes de certificats seront faites à la création de nouveaux containers uniquement
+
+#[acme]
+#email = "XXXXXXXXX"
+#storage = "/etc/traefik/letsencrypt.json"
+#entryPoint = "https"
+#onHostRule = true
+
+#[acme.httpChallenge]
+#entryPoint = "http"

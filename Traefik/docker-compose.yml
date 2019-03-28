@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+
+#Traefik
+  reverse-proxy:
+    container_name: traefik
+    image: traefik # The official Traefik docker image
+    command: --api --docker # Enables the web UI and tells Træfik to listen to docker
+    ports:
+      - "80:80"     # The HTTP port
+      - "443:443"   # The HTTPS port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+      - /DockerData/Traefik/letsencrypt.json:/etc/traefik/letsencrypt.json
+      - /DockerData/Traefik/log:/var/log/traefik
+      - /DockerData/Traefik/traefik.toml:/traefik.toml
+      - /DockerData/Traefik/certificat/certificate.pem:/cert.pem #Certificat utilisé pour l'ensemble des hosts
+      - /DockerData/Traefik/certificat/key.pem:/privkey.pem #Certificat utilisé pour l'ensemble des hosts
+    restart: always # Permet le redémarrage au démarrage du serveur
+

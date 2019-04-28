@@ -8,3 +8,7 @@ Voici un pack de diverses images Docker que j'utilise
 
 Les informations sur le containeeur se situe ici : 
 https://reseauxeasyandfree.simonlena.com/icinga2-installandconfig/
+
+## Rundeck
+
+Docker-compose pour la création d'un container Rundeck

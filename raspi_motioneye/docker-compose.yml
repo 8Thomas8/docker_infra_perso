@@ -1,0 +1,17 @@
+version: "2"
+
+services:
+
+  # MySQL container#
+  motioneye:
+    container_name: motioneye
+    image: ccrisan/motioneye:master-armhf
+    restart: always 
+    environment:
+      - MYSQL_ROOT_PASSWORD=XXXXXX
+    ports:
+      - "8765:8765"
+    volumes:
+      - /Dockerdata/Motioneyeos/etc/motioneye:/etc/motioneye
+      - /Dockerdata/Motioneyeos/var/lib/motioneye:/var/lib/motioneye
+      #- /Dockerdata/Motioneyeos/localtime:/etc/localtime:ro

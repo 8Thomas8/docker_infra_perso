@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+
+#Source : https://github.com/CodaFog/jeedom-rpi/blob/master/docker-compose.yml
+
+  # MySQL container#
+  jeedom-mariadb:
+      container_name: jeedom-mariadb
+      #hostname : jeedom-mariadb
+      image: monstrenyatko/rpi-mariadb
+      network_mode: "host"
+      restart: always
+      ports:
+          - "3306:3306" 
+      environment:
+          - MYSQL_ROOT_PASSWORD=XXXXXX
+          - MYSQL_DATABASE=jeedom
+          - MYSQL_USER=rjeedom
+          - MYSQL_PASSWORD=XXXXXX
+      volumes:
+          - /Dockerdata/Jeedom/mysql:/var/lib/mysql
+
+  # Jeedom container
+  jeedom:
+      container_name: jeedom
+      build: .
+      restart: always
+      privileged: true
+      environment:
+          - ROOT_PASSWORD=jeedom
+      ports:
+          - "9080:80"
+          - "9022:22"
+          - "9043:443"
+          - "8083:8083"
+          # OpenZWave: 8083
+          # ESPEasy: 8121
+          # Mosquito port (MQTT server): 1883
+          #- 8121:8121
+          #- 1883:1883
+#      links:
+#          - jeedom-mariadb
+      #mac_address: b8:27:eb:3c:08:33
+      volumes:
+          - /Dockerdata/Jeedom/data:/var/www/html
+      devices:
+         - /dev/ttyACM0:/dev/ttyACM0
+      #Pour ajout du bluetooth
+      network_mode: "host"
+      #--cap-add: Add Linux capabilities
+      #--cap-drop: Drop Linux capabilities
+      cap_add:
+         - SYS_ADMIN
+         - NET_ADMIN
+      #   - /dev/ttyACM1:/dev/ttyACM1
+      # /dev/rflink and /dev/zwave to be defined through udev rules as soon as
+      # relative links supported by Docker
+      #         - /dev/rflink:/dev/rflink
+      #         - /dev/zwave:/dev/zwave
+      # Avoid writing on SDCard to often (supported from docker-compose 1.7.1)
+      #tmpfs:
+          #- /tmp:rw,size=64M
+          #- /var/log:rw,size=32M
+          #- /var/www/html/log:rw,size=32M

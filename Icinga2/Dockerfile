@@ -18,8 +18,13 @@ RUN apt-get install -y bc
 #Pour la modif de fichier quand exec sur la machine
 RUN apt-get install -y nano
 
+#Pour le check Proxmox - PVE
+RUN apt-get install -y python-enum34 python-requests
+
 #Ajout des nouveaux plugins
 COPY dkrfile_plugin/* /usr/lib/nagios/plugins/
+RUN chmod 755 /usr/lib/nagios/plugins/check_vox_dpkg
+RUN chmod 755 /usr/lib/nagios/plugins/check_snmp_printer
 
 ##############################
 ## Ajout des connexions SSH ##

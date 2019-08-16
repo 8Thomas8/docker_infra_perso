@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3'
 
 services:
 
@@ -7,24 +7,29 @@ services:
 ########################################################
 
   icinga2:
-    build : ./ 
+    build : ./
     hostname: vox-icinga2
+    container_name: icinga2
     environment:
       - DIRECTOR_KICKSTART="false"
       - ICINGAWEB2_ADMIN_USER=admin_icinga
-      - ICINGAWEB2_ADMIN_PASS=XXXXXXXXXXX
+      - ICINGAWEB2_ADMIN_PASS=XXXXXXXX
       #Ajout d'une BDD a coté (En cours)
       #- DEFAULT_MYSQL_HOST=icinga-mariadb
       #- DEFAULT_MYSQL_USER=root  #The MySQL user to access the database (defaults to icinga2)
-      #- DEFAULT_MYSQL_PASS=Tata89## #The password for the MySQL user. (defaults to randomly generated str$ 
+      #- DEFAULT_MYSQL_PASS=Tata89## #The password for the MySQL user. (defaults to randomly generated str$
     volumes:
-      - /DockerData/icinga2/config_icinga2:/etc/icinga2 #Icinga2 configuration folder
-      - /DockerData/icinga2/config_icingaweb2:/etc/icingaweb2 #Icingaweb2 configuration folder
-      - /DockerData/icinga2/data_icinga2:/var/lib/icinga2 #Icinga2 Data
-      - /DockerData/icinga2/bdd_icinga2:/var/lib/mysql #MySQL Database
-      - /DockerData/icinga2/data_root:/root #Permet de garder les cle SSH pour la connection en by_ssh
+      - /DockerData/Icinga2/config_icinga2:/etc/icinga2 #Icinga2 configuration folder
+      - /DockerData/Icinga2/config_icingaweb2:/etc/icingaweb2 #Icingaweb2 configuration folder
+      - /DockerData/Icinga2/data_icinga2:/var/lib/icinga2 #Icinga2 Data
+      - /DockerData/Icinga2/bdd_icinga2:/var/lib/mysql #MySQL Database
+      - /DockerData/Icinga2/data_root:/root #Permet de garder les cle SSH pour la connection en by_ssh
+      - /DockerData/Icinga2/data_notif/revaliases:/etc/ssmtp/revaliases:ro
+      - /DockerData/Icinga2/data_notif/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
+    command: 
+      - "bash -c 'cp -R /root/.ssh /var/lib/nagios && chown -R nagios: /var/lib/nagios/.ssh'"
     labels:
-      - "traefik.frontend.rule=Host:icinga.voxintra"
+      - "traefik.frontend.rule=Host:icinga.XXXXXXXXXX"
     networks:
       - traefik
     restart: always
@@ -42,14 +47,14 @@ networks:
 #    image : jordan/icinga2
 #    hostname: icinga2
 #    labels:
-#      - "traefik.frontend.rule=Host:icinga.voxintra"
+#      - "traefik.frontend.rule=Host:icinga.XXXXXXXXX"
 #    environment:
 #      - DIRECTOR_KICKSTART="false"
 #      - ICINGAWEB2_ADMIN_USER=admin_icinga
-#      - ICINGAWEB2_ADMIN_PASS=XXXXXXXXXXX
+#      - ICINGAWEB2_ADMIN_PASS=XXXXXXX
 #      - DEFAULT_MYSQL_HOST=icinga-mariadb
 #      - DEFAULT_MYSQL_USER=root  #The MySQL user to access the database (defaults to icinga2)
-#      - DEFAULT_MYSQL_PASS=Tata89## #The password for the MySQL user. (defaults to randomly generated str$
+#      - DEFAULT_MYSQL_PASS=XXXXXXXX #The password for the MySQL user. (defaults to randomly generated str$
 #    volumes:
 #      - /DockerData/icinga/config_icinga2:/etc/icinga2 #Icinga2 configuration folder
 #      - /DockerData/icinga/config_icingaweb2:/etc/icingaweb2 #Icingaweb2 configuration folder
@@ -64,7 +69,7 @@ networks:
 #    container_name: icinga-mariadb
 #    hostname:icinga-mariadb
 #    environment:
-#      - MYSQL_ROOT_PASSWORD=XXXXXXXXXXX
+#      - MYSQL_ROOT_PASSWORD=XXXXXXX
 #      - MYSQL_DATABASE=icingaweb2
 #      - MYSQL_DATABASE=icinga2idomysql
 #      - MYSQL_DATABASE=icingaweb2_director

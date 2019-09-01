@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+
+  dolibarr-mariadb:
+    image: mariadb:10.3
+    container_name: dolibarr_mariadb
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: dolibarr
+    volumes:
+       - /Dockerdata/Dolibarr/mysql:/var/lib/mysql
+    restart: always
+    networks:
+      - traefik_proxy
+
+  dolibarr-web:
+    image: tuxgasy/dolibarr
+    container_name: dolibarr_web
+    environment:
+        DOLI_DB_HOST: dolibarr-mariadb
+        DOLI_DB_USER: root
+        DOLI_DB_PASSWORD: root
+        DOLI_DB_NAME: dolibarr
+        #DOLI_URL_ROOT: 'http://0.0.0.0'
+        PHP_INI_DATE_TIMEZONE: 'Europe/Paris'
+    #links:
+    #    - mariadb
+    restart: always
+    #Attention c'est comme ca avec la version 2 different avec la V3
+    labels:
+      - "traefik.frontend.rule=Host:XXXXXXX.XXXXXX.com"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_default

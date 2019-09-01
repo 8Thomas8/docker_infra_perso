@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Dockerdata/Portainer/portainer_data:/data
+    labels:
+      - "traefik.frontend.rule=Host:XXXXXXXXXX.com"
+    #restart: always
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external: true

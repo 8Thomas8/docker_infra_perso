@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  limesurvey:
+    container_name: limesurvey
+    image:
+      crramirez/limesurvey:latest
+    volumes:
+      - /Dockerdata/Limesurvey/mysql:/var/lib/mysql
+      - /Dockerdata/Limesurvey/upload:/app/upload
+    #restart: always
+    labels:
+      - "traefik.frontend.rule=Host:XXXXXXX.XXXXXXX.com"      
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_default

@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+
+  matomo-apache:
+    image: matomo:3.8-apache
+    container_name: matomo_apache
+    restart: always
+    links:
+      - matomo-db
+    volumes:
+      - /Dockerdata/Matomo/config:/var/www/html/config:rw
+      - /Dockerdata/Matomo/logs:/var/www/html/logs
+    labels:
+      - "traefik.frontend.rule=Host:XXXXXXX.XXXXXXXX.com"
+    networks:
+      - traefik_proxy
+
+  matomo-db:
+    image: mariadb:10.3
+    container_name: matomo_db
+    hostname: matomo_db
+    volumes:
+       - /Dockerdata/Matomo/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=matomo
+      - MYSQL_ROOT_PASSWORD=XXXXXXX
+    restart: always
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_default

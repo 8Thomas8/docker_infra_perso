@@ -7,17 +7,16 @@ services:
   # MySQL container#
   jeedom-mariadb:
       container_name: jeedom-mariadb
-      #hostname : jeedom-mariadb
       image: monstrenyatko/rpi-mariadb
       network_mode: "host"
       restart: always
       ports:
           - "3306:3306" 
       environment:
-          - MYSQL_ROOT_PASSWORD=XXXXXX
+          - MYSQL_ROOT_PASSWORD=P@ssAdmin
           - MYSQL_DATABASE=jeedom
           - MYSQL_USER=rjeedom
-          - MYSQL_PASSWORD=XXXXXX
+          - MYSQL_PASSWORD=P@ssAdmin
       volumes:
           - /Dockerdata/Jeedom/mysql:/var/lib/mysql
 
@@ -37,11 +36,6 @@ services:
           # OpenZWave: 8083
           # ESPEasy: 8121
           # Mosquito port (MQTT server): 1883
-          #- 8121:8121
-          #- 1883:1883
-#      links:
-#          - jeedom-mariadb
-      #mac_address: b8:27:eb:3c:08:33
       volumes:
           - /Dockerdata/Jeedom/data:/var/www/html
       devices:
@@ -53,13 +47,19 @@ services:
       cap_add:
          - SYS_ADMIN
          - NET_ADMIN
+      # Avoid writing on SDCard to often (supported from docker-compose 1.7.1)
+      tmpfs:
+          # /tmp non activé car erreur d'écriture dans jeedom
+          #- /tmp:rw,size=64M
+          #- /var/log:rw,size=32M
+          - /var/www/html/log:rw,size=32M
+      
+      #Spécifier adresse mac : Pour éviter le message "Vous avez un trop grand nombre de systeme jeedom déclaré"
+      #mac_address: 02:42:36:0b:7d:14
+      #links:
+      #   - jeedom-mariadb
       #   - /dev/ttyACM1:/dev/ttyACM1
       # /dev/rflink and /dev/zwave to be defined through udev rules as soon as
       # relative links supported by Docker
       #         - /dev/rflink:/dev/rflink
       #         - /dev/zwave:/dev/zwave
-      # Avoid writing on SDCard to often (supported from docker-compose 1.7.1)
-      #tmpfs:
-          #- /tmp:rw,size=64M
-          #- /var/log:rw,size=32M
-          #- /var/www/html/log:rw,size=32M

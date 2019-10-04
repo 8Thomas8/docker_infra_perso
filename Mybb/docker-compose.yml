@@ -5,7 +5,7 @@ services:
     container_name: mybb-phpfpm
     image: mybb/mybb:latest
     volumes:
-      - /DockerData/Mybb/mybb:/var/www/html:rw
+      - /DockerData/Mybb/data_mybb:/var/www/html:rw
     networks:
       - traefik
     restart: always
@@ -13,11 +13,8 @@ services:
   nginx:
     container_name: mybb-nginx
     image: nginx:mainline
-    #ports:
-    #  - published: 8080
-    #  target: 80
     volumes:
-      - /DockerData/Mybb/mybb:/var/www/html:ro
+      - /DockerData/Mybb/data_mybb:/var/www/html:ro
       - /DockerData/Mybb/default.conf:/etc/nginx/conf.d/default.conf
     labels:
       - "traefik.frontend.rule=Host:mybb.voxintra"
@@ -29,16 +26,33 @@ services:
 
   postgresql:
     container_name: mybb-postrgesql
-    #hostname: kanboard-mariadb
     environment:
       POSTGRES_DB: mybb
-      POSTGRES_PASSWORD: XXXXXXXXXXX
+      POSTGRES_PASSWORD: XXXXXXX
       POSTGRES_USER: mybb
     image: postgres:11.3
     volumes:
-      - /DockerData/Mybb/postgres/data:/var/lib/postgresql/data:rw
+      - /DockerData/Mybb/data_postgres/data:/var/lib/postgresql/data:rw
     networks:
       - traefik
+    restart: always
+
+  backup:
+    container_name: mybb-bdd-bckp
+    build: ./dockerfile_bkcp-bdd
+    environment:
+      SETUP_CRON: "0 4 * * *"
+      BACKUP_SERVICE_NAME: "my-service"
+      BACKUP_DB_USER: "mybb"
+      BACKUP_DB_PASSWORD: "XXXXXXX"
+      BACKUP_DB_HOST: "mybb-postrgesql"
+      BACKUP_DB_TYPE: "POSTGRESQL"
+      BACKUP_DB: "mybb"
+      BACKUP_LOCAL_ROLLING: "2"
+    networks:
+      - traefik
+    volumes:
+      - /DockerData/Mybb/backup_db:/root/backups
     restart: always
 
 networks:

@@ -1,0 +1,60 @@
+#GLPI
+
+version: '3.7'
+
+services:
+
+  glpi-mariadb:
+    image: mariadb
+    container_name: glpi-mariadb
+    hostname: glpi-mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=XTXTXTXTXT
+      - MYSQL_DATABASE=glpi
+      - MYSQL_USER=rglpi
+      - MYSQL_PASSWORD=XXXXXXX
+    volumes :
+      - /DockerData/Glpi/dataglpimysql:/var/lib/mysql
+    networks:
+      - traefik
+    restart: always
+
+  glpi-web:
+    build: ./Dockerfile_glpiweb
+    container_name: glpi
+    links:
+      - glpi-mariadb:glpi-mariadb #Lien avec la BDD
+    volumes:
+      - /DockerData/Glpi/dataglpiapache:/var/www/html/glpi
+      - /DockerData/Glpi/localtime:/etc/localtime:ro
+    environment:
+      - TIMEZONE=Europe/Brussels
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:glpi.voxintra"
+    networks:
+      - traefik
+
+  glpi-bckp:
+    container_name: glpi-bdd-bckp
+    build: ./Dockerfile_bkcpbdd
+    environment:
+      SETUP_CRON: "0 4 * * *"
+      BACKUP_SERVICE_NAME: "my-service"
+      BACKUP_DB_USER: "rglpi"
+      BACKUP_DB_PASSWORD: "XXXXXXX"
+      BACKUP_DB_HOST: "glpi-mariadb"
+      BACKUP_DB_TYPE: "MYSQL"
+      BACKUP_DB: "glpi"
+      BACKUP_LOCAL_ROLLING: "2"
+    networks:
+      - traefik
+    volumes:
+      - /DockerData/Glpi/backup_db:/root/backups
+    restart: always
+
+
+networks:
+  traefik:
+    external:
+      name: traefik_default

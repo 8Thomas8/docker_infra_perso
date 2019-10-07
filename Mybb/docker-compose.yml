@@ -15,7 +15,8 @@ services:
     image: nginx:mainline
     volumes:
       - /DockerData/Mybb/data_mybb:/var/www/html:ro
-      - /DockerData/Mybb/default.conf:/etc/nginx/conf.d/default.conf
+      - /DockerData/Mybb/data_config_mybb/default.conf:/etc/nginx/conf.d/default.conf
+      - /DockerData/Mybb/localtime:/etc/localtime:ro
     labels:
       - "traefik.frontend.rule=Host:mybb.voxintra"
     links:
@@ -26,11 +27,11 @@ services:
 
   postgresql:
     container_name: mybb-postrgesql
+    image: postgres:11.3
     environment:
       POSTGRES_DB: mybb
-      POSTGRES_PASSWORD: XXXXXXX
+      POSTGRES_PASSWORD: XXXXXX
       POSTGRES_USER: mybb
-    image: postgres:11.3
     volumes:
       - /DockerData/Mybb/data_postgres/data:/var/lib/postgresql/data:rw
     networks:
@@ -44,7 +45,7 @@ services:
       SETUP_CRON: "0 4 * * *"
       BACKUP_SERVICE_NAME: "my-service"
       BACKUP_DB_USER: "mybb"
-      BACKUP_DB_PASSWORD: "XXXXXXX"
+      BACKUP_DB_PASSWORD: "XXXXXX"
       BACKUP_DB_HOST: "mybb-postrgesql"
       BACKUP_DB_TYPE: "POSTGRESQL"
       BACKUP_DB: "mybb"

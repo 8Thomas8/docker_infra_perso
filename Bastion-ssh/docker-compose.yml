@@ -1,0 +1,52 @@
+#https://github.com/binlab/docker-bastion
+
+version: "3.7"
+
+services:
+  bastion:
+    build: ./dkrfile
+    container_name: bastion
+    hostname: bastion
+    restart: always
+    expose:
+      - 22/tcp
+    ports:
+      - 22222:22/tcp
+    environment:
+      #Par defaut dans le Dockerfile
+      #"PasswordAuthentication=no"
+      #"PermitEmptyPasswords=no"
+      #"PermitRootLogin=no"
+
+      #Specifies whether public key authentication is allowed. The default is true. Note that this option applies to protocol version 2 only
+      PUBKEY_AUTHENTICATION: "true"
+      #Specifies whether remote hosts are allowed to connect to ports forwarded for the client. By default, sshd binds remote port forwardings to the loopback address. 
+      #This prevents other remote hosts from connecting to forwarded ports. GATEWAY_PORTS can be used to specify that sshd should allow remote port forwardings to bind to non-loopback addresses, thus allowing other hosts to connect. 
+      #The argument may be false to force remote port forwardings to be available to the local host only, true to force remote port forwardings to bind to the wildcard address. 
+      #The default is false
+      GATEWAY_PORTS: "false"
+      #Specifies whether tun device forwarding is allowed. The argument must be true or false.
+      #Specifying true permits both point-to-point (layer 3) and ethernet (layer 2). The default is false.
+      PERMIT_TUNNEL: "false"
+      #Specifies whether X11 forwarding is permitted. The argument must be true or false. The default is false
+      X11_FORWARDING: "false"
+      #Specifies whether TCP forwarding is permitted. The default is true.
+      #Note that disabling TCP forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders
+      TCP_FORWARDING: "true"
+      #Specifies whether ssh-agent forwarding is permitted. The default is true. 
+      #Note that disabling agent forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders
+      AGENT_FORWARDING: "true"
+    volumes:
+      - /DockerData/Bastion_ssh/authorized_keys:/var/lib/bastion/authorized_keys:ro
+      - /DockerData/Bastion_ssh/bastion:/usr/etc/ssh:rw
+    extra_hosts:
+      - docker-host:172.17.0.1
+    networks:
+      - bastion
+
+networks:
+  bastion:
+    driver: bridge
+
+volumes:
+  bastion:

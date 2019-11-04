@@ -1,0 +1,17 @@
+#Proxy Nginx
+
+version: '3.7'
+
+services:
+  nginx:
+    image : nginx:latest
+    container_name : proxy-nginx
+    volumes:
+    - /DockerData/Rp_Nginx/nginx.conf:/etc/nginx/nginx.conf
+    - /DockerData/Rp_Nginx/hosts:/etc/nginx/hosts
+    ports :
+    - 80:80
+    - XXXX:XXXX
+    - XXXX:XXXX
+    restart: always
+

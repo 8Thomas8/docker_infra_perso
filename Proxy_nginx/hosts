@@ -1,0 +1,5 @@
+127.0.0.1       localhost
+127.0.1.1       SRV-PROXY
+192.XXX.X.XXX   url.toto
+192.XXX.X.XXX   url.toto
+

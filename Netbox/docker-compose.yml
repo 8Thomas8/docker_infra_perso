@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+
+  db_netbox:
+    image: postgres:9.5
+    environment:
+       - "POSTGRES_USER=netbox"
+       - "POSTGRES_PASSWORDnetbox"
+    networks:
+      - traefik
+
+  netbox:
+    image: pitkley/netbox
+    depends_on:
+      - db_netbox
+    ports:
+      - "8000:8000"
+    environment:
+      - "ALLOWED_HOSTS=XXXXX.XXXXX localhost"
+      - "DB_HOST=db_netbox"
+      - "DB_NAME=netbox"
+      - "DB_USER=netbox"
+      - "DB_PASS=netbox"
+      - "SECRET_KEY=retretkertkertllkfgjdflgjzierjqmdmdskfkgmfkgmdgrogkeromgkdfmlgkdorgkmdflgkdfmgld"
+    labels:
+      #Dit a Traefik d exposer ce container
+      - "traefik.enable=true"
+      #Le domaine du service repondra au nom ci-dessous
+      - "traefik.http.routers.grafana.rule=Host(`XXXXX.XXXXXX`)"
+      # Allow request only from the predefined entry point named "web"
+      - "traefik.http.routers.grafana.entrypoints=web,websecure"
+      - "traefik.http.services.grafana.loadbalancer.server.port=8000"
+      #Activation https
+      #- "traefik.http.routers.grafana.tls.certresolver=le"
+      #- "traefik.http.routers.redirs.middlewares=redirect-to-https"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external:
+      name: traefik_default
+

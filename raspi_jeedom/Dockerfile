@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 MAINTAINER info@jeedom.com
 
@@ -8,14 +8,6 @@ ENV SSH_PORT 22
 ENV MODE_HOST 0
 
 RUN apt update && apt install -y wget openssh-server supervisor default-mysql-client
-
-## Ajout check nagios ##
-
-RUN apt install -y snmp
-ADD dkrfile_add/check_pve.rb /usr/lib/nagios/plugins/check_pve.rb
-ADD dkrfile_add/check_rpi_temp.sh /usr/lib/nagios/plugins/check_rpi_temp.sh
-RUN chmod 755 /usr/lib/nagios/plugins/check_rpi_temp.sh
-RUN chmod 755 /usr/lib/nagios/plugins/check_pve.rb
 
 ## Ajout prise en charge bluetooth ##
 

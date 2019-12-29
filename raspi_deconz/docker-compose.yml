@@ -62,8 +62,6 @@ services:
       #links:
       #   - jeedom-mariadb
       #   - /dev/ttyACM1:/dev/ttyACM1
-
-      #A faire pour éviter d'avoir le port USB qui change pour chaque clé USB
       # /dev/rflink and /dev/zwave to be defined through udev rules as soon as
       # relative links supported by Docker
       #         - /dev/rflink:/dev/rflink
